@@ -18,7 +18,7 @@
 {% for product in collection.products %}
       <div class="product-card">
         <a href="{{ product.url }}">
-          <img src="{{ product.featured_image | img_url: 'medium' }}" alt="{{ product.title }}">
+          <img src="{{ product.featured_image | img_url: 'large' }}" alt="{{ product.title }}">
           <h2>{{ product.title }}</h2>
         </a>    
             <p>{{ product.price | money }}</p>
@@ -30,7 +30,6 @@
  {% endfor %}
   </div>
 </div>
-
 
 <script>
   function sortProducts(sortOrder) {
@@ -61,9 +60,9 @@
 
     document.addEventListener('DOMContentLoaded', function() {
     var urlParams = new URLSearchParams(window.location.search);
-    var sortBy = urlParams.get('sort_by');
-    if (sortBy) {
-      document.getElementById('sort-options').value = sortBy;
+    var sort = urlParams.get('sort_by');
+    if (sort) {
+      document.getElementById('sort-options').value = sort;
     }
   });
 </script>
@@ -140,8 +139,7 @@
   }
 
   .product-card:hover {
-    transform: scale(1.05);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    transform: scale(1.03);
   }
 
   .product-card img {
