@@ -1,0 +1,177 @@
+<div class="col-page">
+  
+  <div class="col-header">
+    <h1>{{ collection.title }}</h1> 
+    <p>{{ collection.description }}</p>
+  </div>
+
+  <div class="col-filter">
+    <label>Sort by:</label>
+    <select id="sort-options" onchange="sortProducts(this.value)">
+      <option value="manual">Featured</option>
+      <option value="price-ascending">Price: Low to High</option>
+      <option value="price-descending">Price: High to Low</option>
+    </select>
+  </div>
+
+  <div class="col-products">
+{% for product in collection.products %}
+      <div class="product-card">
+        <a href="{{ product.url }}">
+          <img src="{{ product.featured_image | img_url: 'medium' }}" alt="{{ product.title }}">
+          <h2>{{ product.title }}</h2>
+        </a>    
+            <p>{{ product.price | money }}</p>
+     <form class="add-to-cart-form" onsubmit="addToCart(event, '{{ product.variants.first.id }}')">
+<input type="hidden" name="id" value="{{ product.variants.first.id }}">
+          <button type="submit">Add to Cart</button>
+        </form>
+      </div>
+ {% endfor %}
+  </div>
+</div>
+
+
+<script>
+  function sortProducts(sortOrder) {
+    var url = new URL(window.location.href);
+    url.searchParams.set('sort_by', sortOrder);
+    window.location.href = url.toString();
+  }
+
+
+
+  function addToCart(e, variantId) {
+    e.preventDefault();  
+    
+    var formData = new FormData();
+    formData.append('id', variantId);
+
+    fetch('/cart/add', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => {
+      console.log('Product added successfully.');
+    })
+    .catch(error => {
+      console.error('Failed to add Product', error);
+    });
+  }
+
+    document.addEventListener('DOMContentLoaded', function() {
+    var urlParams = new URLSearchParams(window.location.search);
+    var sortBy = urlParams.get('sort_by');
+    if (sortBy) {
+      document.getElementById('sort-options').value = sortBy;
+    }
+  });
+</script>
+
+
+
+
+<style>
+  .col-page {
+    padding: 20px;
+  }
+
+  button {
+    background-color: red;
+    border: 2px solid transparent;
+    border-radius: 5px;
+    color: white;
+    width: 10em;
+    height: 3em;
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+
+  button:hover {
+    background-color: green;
+    border-color: white;
+  }
+
+  .col-header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .col-filter {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .col-filter label {
+    font-size: 16px;
+    color: grey;
+    margin-right: 9px;
+  }
+  
+
+  .col-filter select {
+    padding: 8px;
+    border: 1px solid black;
+    border-radius: 5px;
+    font-size: 16px;
+    color: grey;
+    cursor: pointer;
+    background-color: #f9f9f9;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+  }
+
+
+
+  .col-products {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 22px;
+    justify-content: center;
+  }
+
+  .product-card {
+    border: none;
+    padding: 10px;
+    text-align: center;
+    width: calc(25% - 20px);
+    background-color: white;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .product-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  .product-card img {
+    max-width: 100%;
+    height: auto;
+    transition: transform 0.3s ease;
+  }
+
+  .product-card h2 {
+    font-size: 18px;
+    margin: 10px 0;
+  }
+
+  .product-card p {
+    font-size: 16px;
+    color: grey;
+  }
+
+  .product-card form {
+    margin-top: 10px;
+  }
+ @media (max-width: 480px) {
+    .product-card {
+      width: 100%;
+    }
+  }
+
+  @media (min-width: 481px) and (max-width: 800px) {
+    .product-card {
+      width: 60%;
+    }
+  }
+  </style>
